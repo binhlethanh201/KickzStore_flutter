@@ -1,0 +1,80 @@
+// lib/ui/widgets/product_card.dart
+import 'package:flutter/material.dart';
+import '../../data/models/product_model.dart';
+import '../screens/product/product_detail_screen.dart'; // <--- QUAN TRỌNG: Thêm dòng này
+
+class ProductCard extends StatelessWidget {
+  final ProductModel product;
+  const ProductCard({super.key, required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        // Chuyển sang trang chi tiết khi nhấn vào Card
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(product: product),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. Hình ảnh sản phẩm (Tỉ lệ Uniqlo 1:1.2)
+          AspectRatio(
+            aspectRatio: 1 / 1.2,
+            child: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F7F7),
+                image: DecorationImage(
+                  // Xử lý nếu link ảnh bị lỗi hoặc trống
+                  image: NetworkImage(product.img.isNotEmpty 
+                    ? product.img 
+                    : 'https://via.placeholder.com/300'), 
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          // 2. Nhãn Brand
+          Text(
+            product.brand.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 2),
+          
+          // 3. Tên sản phẩm
+          Text(
+            product.name,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.2,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          
+          // 4. Giá tiền
+          Text(
+            "\$${product.price.toStringAsFixed(2)}",
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE60012),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

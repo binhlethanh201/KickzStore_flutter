@@ -22,7 +22,14 @@ class _SearchScreenState extends State<SearchScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('SEARCH', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+        title: const Text(
+          'SEARCH',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -37,14 +44,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 hintText: "Search by product name, brand...",
                 hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                 prefixIcon: const Icon(Icons.search, color: Colors.black),
-                suffixIcon: _searchController.text.isNotEmpty 
-                  ? IconButton(
-                      icon: const Icon(Icons.clear, size: 20), 
-                      onPressed: () {
-                        _searchController.clear();
-                        productProv.searchProducts("");
-                      }) 
-                  : null,
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
+                        onPressed: () {
+                          _searchController.clear();
+                          productProv.searchProducts("");
+                        },
+                      )
+                    : null,
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.black, width: 1),
                   borderRadius: BorderRadius.zero,
@@ -61,10 +69,13 @@ class _SearchScreenState extends State<SearchScreen> {
           // Kết quả tìm kiếm
           Expanded(
             child: productProv.isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.black))
-                : productProv.searchResults.isEmpty && _searchController.text.isNotEmpty
-                    ? _buildEmptyState()
-                    : _buildSearchResults(productProv),
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.black),
+                  )
+                : productProv.searchResults.isEmpty &&
+                      _searchController.text.isNotEmpty
+                ? _buildEmptyState()
+                : _buildSearchResults(productProv),
           ),
         ],
       ),
@@ -76,12 +87,13 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.65,
+        childAspectRatio: 0.58,
         crossAxisSpacing: 15,
         mainAxisSpacing: 25,
       ),
       itemCount: prov.searchResults.length,
-      itemBuilder: (context, index) => ProductCard(product: prov.searchResults[index]),
+      itemBuilder: (context, index) =>
+          ProductCard(product: prov.searchResults[index]),
     );
   }
 
@@ -92,7 +104,10 @@ class _SearchScreenState extends State<SearchScreen> {
         children: [
           Icon(Icons.search_off, size: 60, color: Colors.grey[300]),
           const SizedBox(height: 16),
-          const Text("No products found.", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500)),
+          const Text(
+            "No products found.",
+            style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+          ),
         ],
       ),
     );

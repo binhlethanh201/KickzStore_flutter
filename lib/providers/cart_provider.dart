@@ -23,16 +23,35 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addItem(String productId, int quantity, double size, String color, String userId) async {
+  Future<void> addItem(
+    String productId,
+    int quantity,
+    double size,
+    String color,
+    String userId,
+  ) async {
+    _isLoading = true;
+    notifyListeners();
+
     try {
       await _cartService.addToCart(productId, quantity, size, color);
       await fetchCart(userId);
     } catch (e) {
+      debugPrint("Add to Cart Error: $e");
       rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  Future<void> updateQuantity(String productId, int newQuantity, double? size, String? color, String userId) async {
+  Future<void> updateQuantity(
+    String productId,
+    int newQuantity,
+    double? size,
+    String? color,
+    String userId,
+  ) async {
     try {
       await _cartService.updateQuantity(productId, newQuantity, size, color);
       await fetchCart(userId);
@@ -41,7 +60,12 @@ class CartProvider with ChangeNotifier {
     }
   }
 
-  Future<void> removeItem(String productId, double? size, String? color, String userId) async {
+  Future<void> removeItem(
+    String productId,
+    double? size,
+    String? color,
+    String userId,
+  ) async {
     try {
       await _cartService.deleteItem(productId, size, color);
       await fetchCart(userId);

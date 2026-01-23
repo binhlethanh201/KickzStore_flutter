@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../providers/wishlist_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../widgets/product_card.dart';
-import '../../widgets/uniqlo_widgets.dart'; // Thêm import
-import '../auth/login_screen.dart';       // Thêm import
+import '../../widgets/uniqlo_widgets.dart';
+import '../auth/login_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -20,8 +20,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
     Future.microtask(() {
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       if (authProv.isAuthenticated) {
-        Provider.of<WishlistProvider>(context, listen: false)
-            .fetchWishlist(authProv.userProfile?['id']);
+        Provider.of<WishlistProvider>(
+          context,
+          listen: false,
+        ).fetchWishlist(authProv.userProfile?['id']);
       }
     });
   }
@@ -60,7 +62,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.favorite_outline, size: 100, color: Color(0xFFEEEEEE)),
+          const Icon(
+            Icons.favorite_outline,
+            size: 100,
+            color: Color(0xFFEEEEEE),
+          ),
           const SizedBox(height: 30),
           const Text(
             "SAVE YOUR FAVORITES",
@@ -85,16 +91,20 @@ class _WishlistScreenState extends State<WishlistScreen> {
     );
   }
 
-  // Giao diện cho thành viên (Đã đăng nhập)
+  // Giao diện cho thành viên
   Widget _buildMemberWishlist(WishlistProvider prov, String? userId) {
     if (prov.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.black));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.black),
+      );
     }
 
     if (prov.wishlistItems.isEmpty) {
       return const Center(
-        child: Text("YOUR WISHLIST IS EMPTY", 
-          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+        child: Text(
+          "YOUR WISHLIST IS EMPTY",
+          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+        ),
       );
     }
 
@@ -102,7 +112,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
       padding: const EdgeInsets.all(16),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.65,
+        // SỬA: Đổi từ 0.65 sang 0.58
+        childAspectRatio: 0.58,
         crossAxisSpacing: 15,
         mainAxisSpacing: 25,
       ),
@@ -119,8 +130,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 onTap: () => prov.toggleWishlist(product, userId!),
                 child: Container(
                   padding: const EdgeInsets.all(4),
-                  color: Colors.white.withOpacity(0.8),
-                  child: const Icon(Icons.close, size: 20, color: Colors.black),
+                  // Tăng độ mờ nền để icon X rõ ràng hơn trên ảnh trắng
+                  color: Colors.white.withOpacity(0.9),
+                  child: const Icon(Icons.close, size: 18, color: Colors.black),
                 ),
               ),
             ),

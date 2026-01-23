@@ -31,21 +31,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      title: const Text('KICKZSTORE', 
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 2)),
-      actions: [
-        // NÚT GIỎ HÀNG LUÔN XUẤT HIỆN Ở GÓC TRÊN
-        IconButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const CartScreen()));
-          },
-          icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black, size: 26),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'KICKZSTORE',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
+          ),
         ),
-        const SizedBox(width: 8),
-      ],
-    ),
+        actions: [
+          // NÚT GIỎ HÀNG LUÔN XUẤT HIỆN Ở GÓC TRÊN
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
+            },
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              color: Colors.black,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,18 +115,39 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("NEW ARRIVALS", style: TextStyle(backgroundColor: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                const Text(
+                  "NEW ARRIVALS",
+                  style: TextStyle(
+                    backgroundColor: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                const Text("MODERN COMFORT\nFOR YOUR FEET", style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.white, height: 1.1)),
+                const Text(
+                  "MODERN COMFORT\nFOR YOUR FEET",
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    height: 1.1,
+                  ),
+                ),
                 const SizedBox(height: 15),
                 ElevatedButton(
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                  ),
                   child: const Text("SHOP NOW"),
-                )
+                ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -134,7 +168,12 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(right: 25),
               child: Text(
                 prov.categories[index].toUpperCase(),
-                style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.w400, color: isSelected ? Colors.black : Colors.grey, decoration: isSelected ? TextDecoration.underline : null),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w400,
+                  color: isSelected ? Colors.black : Colors.grey,
+                  decoration: isSelected ? TextDecoration.underline : null,
+                ),
               ),
             ),
           );
@@ -146,13 +185,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildSectionTitle(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 1)),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1,
+        ),
+      ),
     );
   }
 
   Widget _buildHorizontalProductList(ProductProvider prov) {
     return SizedBox(
-      height: 280,
+      height: 310,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.only(left: 16),
@@ -176,9 +222,19 @@ class _HomeScreenState extends State<HomeScreen> {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("THE COLOR COLLECTION", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(
+            "THE COLOR COLLECTION",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           SizedBox(height: 10),
-          Text("Express yourself with over 20+ unique colorways of our classic silhouettes.", style: TextStyle(color: Colors.white, fontSize: 18, height: 1.4)),
+          Text(
+            "Express yourself with over 20+ unique colorways of our classic silhouettes.",
+            style: TextStyle(color: Colors.white, fontSize: 18, height: 1.4),
+          ),
         ],
       ),
     );
@@ -187,16 +243,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildProductGrid(ProductProvider prov) {
     return GridView.builder(
       padding: const EdgeInsets.all(16),
-      shrinkWrap: true, // Quan trọng khi nằm trong SingleChildScrollView
+      shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.65,
+        childAspectRatio: 0.58,
         crossAxisSpacing: 15,
         mainAxisSpacing: 25,
       ),
       itemCount: prov.products.length,
-      itemBuilder: (context, index) => ProductCard(product: prov.products[index]),
+      itemBuilder: (context, index) =>
+          ProductCard(product: prov.products[index]),
     );
   }
 }

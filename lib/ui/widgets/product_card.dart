@@ -1,7 +1,6 @@
-// lib/ui/widgets/product_card.dart
 import 'package:flutter/material.dart';
 import '../../data/models/product_model.dart';
-import '../screens/product/product_detail_screen.dart'; // <--- QUAN TRỌNG: Thêm dòng này
+import '../screens/product/product_detail_screen.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
@@ -11,7 +10,6 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Chuyển sang trang chi tiết khi nhấn vào Card
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -20,27 +18,32 @@ class ProductCard extends StatelessWidget {
         );
       },
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Hình ảnh sản phẩm (Tỉ lệ Uniqlo 1:1.2)
-          AspectRatio(
-            aspectRatio: 1 / 1.2,
-            child: Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFFF7F7F7),
-                image: DecorationImage(
-                  // Xử lý nếu link ảnh bị lỗi hoặc trống
-                  image: NetworkImage(product.img.isNotEmpty 
-                    ? product.img 
-                    : 'https://via.placeholder.com/300'), 
-                  fit: BoxFit.cover,
+          // 1. Hình ảnh sản phẩm
+          Hero(
+            tag: product.id, // Phải trùng ID với trang Detail
+            child: AspectRatio(
+              aspectRatio: 1 / 1.2,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF7F7F7),
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      product.img.isNotEmpty
+                          ? product.img
+                          : 'https://via.placeholder.com/300',
+                    ),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 8),
-          
-          // 2. Nhãn Brand
+
+          // Dùng Expanded hoặc giới hạn chiều cao các text để tránh Overflow
           Text(
             product.brand.toUpperCase(),
             style: const TextStyle(
@@ -48,23 +51,25 @@ class ProductCard extends StatelessWidget {
               fontWeight: FontWeight.w600,
               color: Colors.grey,
             ),
-          ),
-          const SizedBox(height: 2),
-          
-          // 3. Tên sản phẩm
-          Text(
-            product.name,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 1.2,
-            ),
-            maxLines: 2,
+            maxLines: 1, // GIỚI HẠN 1 dòng cho Brand
             overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 2),
+          SizedBox(
+            height: 35,
+            child: Text(
+              product.name,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.2,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
           const SizedBox(height: 4),
-          
-          // 4. Giá tiền
+
           Text(
             "\$${product.price.toStringAsFixed(2)}",
             style: const TextStyle(

@@ -24,6 +24,9 @@ class WishlistProvider with ChangeNotifier {
   }
 
   Future<void> toggleWishlist(ProductModel product, String userId) async {
+    _isLoading = true;
+    notifyListeners();
+
     final isExist = _wishlistItems.any((item) => item.id == product.id);
     try {
       if (isExist) {
@@ -33,9 +36,12 @@ class WishlistProvider with ChangeNotifier {
         await _wishlistService.addToWishlist(product.id);
         _wishlistItems.add(product);
       }
-      notifyListeners();
     } catch (e) {
+      debugPrint("Wishlist Toggle Error: $e");
       rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 

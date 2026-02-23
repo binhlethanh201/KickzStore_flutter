@@ -15,22 +15,31 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
+  
+  // Các trường địa chỉ chi tiết theo Backend
   late TextEditingController _streetController;
+  late TextEditingController _cityController;
+  late TextEditingController _districtController;
+  
+  String _selectedGender = "M"; // M, F, O
 
   @override
   void initState() {
     super.initState();
     final user = Provider.of<AuthProvider>(context, listen: false).userProfile;
-    _firstNameController = TextEditingController(
-      text: user?['firstName'] ?? '',
-    );
+    
+    _firstNameController = TextEditingController(text: user?['firstName'] ?? '');
     _lastNameController = TextEditingController(text: user?['lastName'] ?? '');
     _emailController = TextEditingController(text: user?['email'] ?? '');
     _phoneController = TextEditingController(text: user?['phone'] ?? '');
-    // Kiểm tra kỹ cấu trúc address từ backend trả về
-    _streetController = TextEditingController(
-      text: user?['address']?['street'] ?? '',
-    );
+    
+    // Khởi tạo Address lồng nhau
+    final address = user?['address'];
+    _streetController = TextEditingController(text: address?['street'] ?? '');
+    _cityController = TextEditingController(text: address?['city'] ?? '');
+    _districtController = TextEditingController(text: address?['district'] ?? '');
+    
+    _selectedGender = user?['gender'] ?? "M";
   }
 
   @override
@@ -40,7 +49,38 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _emailController.dispose();
     _phoneController.dispose();
     _streetController.dispose();
+    _cityController.dispose();
+    _districtController.dispose();
     super.dispose();
+  }
+
+  // Hàm helper để xây dựng nút chọn giới tính
+  Widget _buildGenderOption(String value, String label) {
+    bool isSelected = _selectedGender == value;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _selectedGender = value),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isSelected ? Colors.black : Colors.grey[300]!,
+              width: isSelected ? 2 : 1,
+            ),
+            color: isSelected ? Colors.black : Colors.white,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -75,6 +115,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             ),
             const SizedBox(height: 30),
 
+            // Hàng: Tên
             Row(
               children: [
                 Expanded(
@@ -93,19 +134,52 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               ],
             ),
             const SizedBox(height: 25),
+
+            // Chọn Giới tính
+            const Text(
+              "GENDER",
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                _buildGenderOption("M", "MALE"),
+                const SizedBox(width: 10),
+                _buildGenderOption("F", "FEMALE"),
+                const SizedBox(width: 10),
+                _buildGenderOption("O", "OTHER"),
+              ],
+            ),
+            const SizedBox(height: 25),
+
             UniqloInput(
-              label: "Email",
+              label: "Email Address",
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 25),
             UniqloInput(
-              label: "Phone",
+              label: "Phone Number",
               controller: _phoneController,
               keyboardType: TextInputType.phone,
             ),
-            const SizedBox(height: 25),
-            UniqloInput(label: "Street Address", controller: _streetController),
+            const SizedBox(height: 35),
+
+            // Phần địa chỉ chi tiết
+            const Text(
+              "SHIPPING ADDRESS",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+            ),
+            const SizedBox(height: 20),
+            UniqloInput(label: "Street", controller: _streetController),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(child: UniqloInput(label: "District", controller: _districtController)),
+                const SizedBox(width: 15),
+                Expanded(child: UniqloInput(label: "City", controller: _cityController)),
+              ],
+            ),
 
             const SizedBox(height: 50),
 
@@ -114,25 +188,25 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               isLoading: authProv.isLoading,
               onPressed: () async {
                 FocusScope.of(context).unfocus();
+
+                // Tạo Map đúng cấu trúc lồng nhau mà Backend yêu cầu
                 final Map<String, dynamic> updateData = {
                   "firstName": _firstNameController.text.trim(),
                   "lastName": _lastNameController.text.trim(),
                   "email": _emailController.text.trim(),
                   "phone": _phoneController.text.trim(),
-                };
-                if (_streetController.text.trim().isNotEmpty) {
-                  updateData["address"] = {
+                  "gender": _selectedGender,
+                  "address": {
                     "street": _streetController.text.trim(),
-                    "city": authProv.userProfile?['address']?['city'] ?? "",
-                    "district":
-                        authProv.userProfile?['address']?['district'] ?? "",
-                    "country":
-                        authProv.userProfile?['address']?['country'] ?? "",
-                  };
-                }
+                    "city": _cityController.text.trim(),
+                    "district": _districtController.text.trim(),
+                    "country": authProv.userProfile?['address']?['country'] ?? "Vietnam",
+                  }
+                };
+
+                // Giữ lại ngày sinh nếu đã có sẵn
                 if (authProv.userProfile?['dateOfBirth'] != null) {
-                  updateData["dateOfBirth"] =
-                      authProv.userProfile!['dateOfBirth'];
+                  updateData["dateOfBirth"] = authProv.userProfile!['dateOfBirth'];
                 }
 
                 final success = await authProv.updateProfile(updateData);
@@ -141,22 +215,25 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   if (success) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text("Profile updated!"),
+                        content: Text("PROFILE UPDATED SUCCESSFULLY!"),
                         backgroundColor: Colors.black,
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                     Navigator.pop(context);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(authProv.errorMessage ?? "Update failed"),
-                        backgroundColor: Colors.red,
+                        content: Text(authProv.errorMessage ?? "UPDATE FAILED"),
+                        backgroundColor: Colors.red[900],
+                        behavior: SnackBarBehavior.floating,
                       ),
                     );
                   }
                 }
               },
             ),
+            const SizedBox(height: 40),
           ],
         ),
       ),

@@ -10,9 +10,11 @@ class CartProvider with ChangeNotifier {
   CartModel? get cart => _cart;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchCart(String userId) async {
-    _isLoading = true;
+  Future<void> fetchCart(String userId, {bool isSilent = false}) async {
+    if (!isSilent) {
+    _isLoading = true; 
     notifyListeners();
+  }
     try {
       _cart = await _cartService.getCart(userId);
     } catch (e) {
@@ -52,11 +54,14 @@ class CartProvider with ChangeNotifier {
     String? color,
     String userId,
   ) async {
+    if (newQuantity < 1)
+      return; 
+
     try {
       await _cartService.updateQuantity(productId, newQuantity, size, color);
-      await fetchCart(userId);
+      await fetchCart(userId, isSilent: true);
     } catch (e) {
-      rethrow;
+      debugPrint("Update Error: $e");
     }
   }
 
@@ -68,9 +73,9 @@ class CartProvider with ChangeNotifier {
   ) async {
     try {
       await _cartService.deleteItem(productId, size, color);
-      await fetchCart(userId);
+      await fetchCart(userId, isSilent: true);
     } catch (e) {
-      rethrow;
+      debugPrint("Remove Error: $e");
     }
   }
 }

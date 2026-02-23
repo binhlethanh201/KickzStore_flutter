@@ -27,7 +27,12 @@ class CartService {
     }
   }
 
-  Future<void> addToCart(String productId, int quantity, double size, String color) async {
+  Future<void> addToCart(
+    String productId,
+    int quantity,
+    double size,
+    String color,
+  ) async {
     final response = await http.post(
       Uri.parse('${ApiConstants.baseUrl}/carts'),
       headers: await _getHeaders(),
@@ -41,7 +46,12 @@ class CartService {
     if (response.statusCode != 200) throw Exception('Failed to add to cart');
   }
 
-  Future<void> updateQuantity(String productId, int quantity, double? size, String? color) async {
+  Future<void> updateQuantity(
+    String productId,
+    int quantity,
+    double? size,
+    String? color,
+  ) async {
     final response = await http.put(
       Uri.parse('${ApiConstants.baseUrl}/carts/$productId'),
       headers: await _getHeaders(),
@@ -51,11 +61,14 @@ class CartService {
   }
 
   Future<void> deleteItem(String productId, double? size, String? color) async {
-    final response = await http.delete(
-      Uri.parse('${ApiConstants.baseUrl}/carts/$productId'),
-      headers: await _getHeaders(),
-      body: jsonEncode({"size": size, "color": color}),
-    );
-    if (response.statusCode != 200) throw Exception('Failed to delete item');
+    final url = Uri.parse('${ApiConstants.baseUrl}/carts/$productId');
+    final request = http.Request("DELETE", url);
+    request.headers.addAll(await _getHeaders());
+    request.body = jsonEncode({"size": size, "color": color});
+
+    final streamedResponse = await request.send();
+    if (streamedResponse.statusCode != 200) {
+      throw Exception('Failed to delete item');
+    }
   }
 }

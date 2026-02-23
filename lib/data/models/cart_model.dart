@@ -1,14 +1,38 @@
+// kickzstore_flutter/lib/data/models/cart_model.dart
+
 class CartModel {
   final List<CartItemModel> items;
 
   CartModel({required this.items});
 
   factory CartModel.fromJson(Map<String, dynamic> json) {
-    return CartModel(
-      items: (json['items'] as List)
-          .map((item) => CartItemModel.fromJson(item))
-          .toList(),
-    );
+    List<CartItemModel> rawItems = (json['items'] as List)
+        .map((item) => CartItemModel.fromJson(item))
+        .toList();
+
+    Map<String, CartItemModel> mergedMap = {};
+
+    for (var item in rawItems) {
+      // Chuẩn hóa Key: ID_Size_Color (Làm tròn size để tránh 42.0 khác 42)
+      String key = "${item.productId}_${item.size?.toStringAsFixed(1)}_${item.color}";
+
+      if (mergedMap.containsKey(key)) {
+        CartItemModel existing = mergedMap[key]!;
+        mergedMap[key] = CartItemModel(
+          productId: existing.productId,
+          name: existing.name,
+          img: existing.img,
+          price: existing.price,
+          brand: existing.brand,
+          quantity: existing.quantity + item.quantity,
+          size: existing.size,
+          color: existing.color,
+        );
+      } else {
+        mergedMap[key] = item;
+      }
+    }
+    return CartModel(items: mergedMap.values.toList());
   }
 
   double get totalPrice => items.fold(0, (sum, item) => sum + (item.price * item.quantity));
@@ -36,16 +60,33 @@ class CartItemModel {
   });
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
-    // Lấy thông tin từ object productId đã được populate
     var productInfo = json['productId'];
+    
+    // Kiểm tra nếu productId là String (chưa populate) hoặc Map (đã populate)
+    String id = "";
+    String n = "Unknown";
+    String im = "";
+    double p = 0.0;
+    String b = "";
+
+    if (productInfo is Map) {
+      id = productInfo['_id'] ?? "";
+      n = productInfo['name'] ?? "";
+      im = productInfo['img'] ?? "";
+      p = (productInfo['price'] ?? 0).toDouble();
+      b = productInfo['brand'] ?? "";
+    } else {
+      id = productInfo.toString();
+    }
+
     return CartItemModel(
-      productId: productInfo['_id'],
-      name: productInfo['name'],
-      img: productInfo['img'],
-      price: (productInfo['price'] ?? 0).toDouble(),
-      brand: productInfo['brand'],
-      quantity: json['quantity'],
-      size: (json['size'] != null) ? json['size'].toDouble() : null,
+      productId: id,
+      name: n,
+      img: im,
+      price: p,
+      brand: b,
+      quantity: json['quantity'] ?? 1,
+      size: (json['size'] != null) ? (json['size'] as num).toDouble() : null,
       color: json['color'],
     );
   }

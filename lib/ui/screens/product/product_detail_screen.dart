@@ -11,7 +11,8 @@ import '../../widgets/product_card.dart'; // Import để dùng ở mục gợi 
 
 class ProductDetailScreen extends StatefulWidget {
   final ProductModel product;
-  const ProductDetailScreen({super.key, required this.product});
+  final String heroTag;
+  const ProductDetailScreen({super.key, required this.product, required this.heroTag});
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -89,7 +90,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               width: double.infinity,
               color: const Color(0xFFF7F7F7),
               child: Hero(
-                tag: product.id,
+                tag: widget.heroTag,
                 child: Image.network(product.img, fit: BoxFit.contain),
               ),
             ),

@@ -4,6 +4,7 @@ import 'providers/product_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/order_provider.dart';
 import 'ui/screens/main_wrapper.dart';
 
 void main() async {
@@ -19,6 +20,7 @@ void main() async {
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
       ],
       child: const MyApp(),
     ),

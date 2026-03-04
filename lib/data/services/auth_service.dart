@@ -4,7 +4,6 @@ import '../../core/constants/api_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  // Đăng ký
   Future<bool> register({
     required String firstName,
     required String lastName,
@@ -15,7 +14,6 @@ class AuthService {
       final response = await http.post(
         Uri.parse('${ApiConstants.baseUrl}/auth/register'),
         headers: {"Content-Type": "application/json"},
-        // Chỉ gửi các trường bắt buộc theo model Backend của bạn để tối giản form
         body: jsonEncode({
           "firstName": firstName,
           "lastName": lastName,
@@ -35,7 +33,6 @@ class AuthService {
     }
   }
 
-  // Đăng nhập
   Future<String> login(String email, String password) async {
     try {
       final response = await http.post(
@@ -47,7 +44,6 @@ class AuthService {
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        // Lưu token vào máy
         final token = body['token'];
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
@@ -60,13 +56,11 @@ class AuthService {
     }
   }
 
-  // Đăng xuất
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt_token');
   }
 
-  // Get Profile
   Future<Map<String, dynamic>> getProfile() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
@@ -75,8 +69,7 @@ class AuthService {
       Uri.parse('${ApiConstants.baseUrl}/users/profile'),
       headers: {
         "Content-Type": "application/json",
-        "Authorization":
-            "Bearer $token", // Đính kèm token để qua middleware verifyToken
+        "Authorization": "Bearer $token",
       },
     );
 
@@ -87,7 +80,6 @@ class AuthService {
     }
   }
 
-  //update Profile
   Future<bool> updateProfile(Map<String, dynamic> userData) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
@@ -109,7 +101,6 @@ class AuthService {
     }
   }
 
-  //Change password
   Future<bool> changePassword(String oldPassword, String newPassword) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');

@@ -5,11 +5,12 @@ import 'providers/auth_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/order_provider.dart';
+import 'providers/review_provider.dart';
 import 'ui/screens/main_wrapper.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); 
-  
+  WidgetsFlutterBinding.ensureInitialized();
+
   final authProvider = AuthProvider();
   await authProvider.checkLoginStatus();
 
@@ -21,6 +22,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
       ],
       child: const MyApp(),
     ),
@@ -37,11 +39,11 @@ class MyApp extends StatelessWidget {
       title: 'KickzStore',
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
-        fontFamily: 'Inter', // Nếu bạn đã cài font Inter
+        fontFamily: 'Inter',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: const MainWrapper(), // Thay HomeScreen bằng MainWrapper
+      home: const MainWrapper(),
     );
   }
 }

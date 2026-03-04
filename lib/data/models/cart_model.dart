@@ -1,5 +1,3 @@
-// kickzstore_flutter/lib/data/models/cart_model.dart
-
 class CartModel {
   final List<CartItemModel> items;
 
@@ -13,8 +11,8 @@ class CartModel {
     Map<String, CartItemModel> mergedMap = {};
 
     for (var item in rawItems) {
-      // Chuẩn hóa Key: ID_Size_Color (Làm tròn size để tránh 42.0 khác 42)
-      String key = "${item.productId}_${item.size?.toStringAsFixed(1)}_${item.color}";
+      String key =
+          "${item.productId}_${item.size?.toStringAsFixed(1)}_${item.color}";
 
       if (mergedMap.containsKey(key)) {
         CartItemModel existing = mergedMap[key]!;
@@ -35,7 +33,8 @@ class CartModel {
     return CartModel(items: mergedMap.values.toList());
   }
 
-  double get totalPrice => items.fold(0, (sum, item) => sum + (item.price * item.quantity));
+  double get totalPrice =>
+      items.fold(0, (sum, item) => sum + (item.price * item.quantity));
 }
 
 class CartItemModel {
@@ -61,8 +60,7 @@ class CartItemModel {
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     var productInfo = json['productId'];
-    
-    // Kiểm tra nếu productId là String (chưa populate) hoặc Map (đã populate)
+
     String id = "";
     String n = "Unknown";
     String im = "";

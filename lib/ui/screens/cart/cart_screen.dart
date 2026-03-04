@@ -18,7 +18,6 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    // Gọi API lấy giỏ hàng ngay khi vào trang
     Future.microtask(() {
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       final userId =
@@ -36,7 +35,6 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     final cartProv = Provider.of<CartProvider>(context);
     final authProv = Provider.of<AuthProvider>(context);
-    // Lấy ID an toàn để thực hiện các thao tác trong giỏ hàng
     final userId = authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];
 
     return Scaffold(
@@ -54,11 +52,6 @@ class _CartScreenState extends State<CartScreen> {
         ),
         centerTitle: true,
       ),
-      // LOGIC HIỂN THỊ MƯỢT MÀ:
-      // 1. Nếu chưa login -> Guest View
-      // 2. Nếu đang load LẦN ĐẦU (cart chưa có data) -> Hiện Shimmer
-      // 3. Nếu giỏ hàng trống -> Empty State
-      // 4. Còn lại -> Hiện danh sách sản phẩm (kể cả khi đang update ngầm)
       body: !authProv.isAuthenticated
           ? _buildGuestView(context)
           : (cartProv.isLoading && cartProv.cart == null)
@@ -69,7 +62,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  // Giao diện cho khách (Chưa đăng nhập)
   Widget _buildGuestView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -105,9 +97,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  // Giao diện giỏ hàng cho thành viên (Đã tối ưu không bị giật)
   Widget _buildMemberCart(CartProvider cartProv, String? userId) {
-    // LƯU Ý: Không dùng 'if (cartProv.isLoading)' ở đây để tránh làm trắng màn hình khi nhấn +/-
     return Column(
       children: [
         Expanded(
@@ -153,7 +143,6 @@ class _CartScreenState extends State<CartScreen> {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            // Nút Giảm số lượng
                             _qtyBtn(Icons.remove, () {
                               if (userId != null) {
                                 cartProv.updateQuantity(
@@ -171,7 +160,6 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                               child: Text("${item.quantity}"),
                             ),
-                            // Nút Tăng số lượng
                             _qtyBtn(Icons.add, () {
                               if (userId != null) {
                                 cartProv.updateQuantity(
@@ -184,7 +172,6 @@ class _CartScreenState extends State<CartScreen> {
                               }
                             }),
                             const Spacer(),
-                            // Nút Xóa sản phẩm
                             IconButton(
                               icon: const Icon(
                                 Icons.delete_outline,
@@ -270,9 +257,9 @@ class _CartScreenState extends State<CartScreen> {
             text: "Proceed to Checkout",
             onPressed: () {
               Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CheckoutScreen()),
-            );
+                context,
+                MaterialPageRoute(builder: (context) => const CheckoutScreen()),
+              );
             },
           ),
         ],

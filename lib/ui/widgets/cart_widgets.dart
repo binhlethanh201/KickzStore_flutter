@@ -8,7 +8,7 @@ class CartShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.all(20),
-      itemCount: 4, // Hiện 4 item giả
+      itemCount: 4,
       separatorBuilder: (context, index) => const Divider(height: 40),
       itemBuilder: (context, index) {
         return Shimmer.fromColors(
@@ -17,37 +17,32 @@ class CartShimmer extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Khung ảnh giả
-              Container(
-                width: 100,
-                height: 120,
-                color: Colors.white,
-              ),
+              Container(width: 100, height: 120, color: Colors.white),
               const SizedBox(width: 15),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Dòng tên sp giả
-                    Container(width: double.infinity, height: 16, color: Colors.white),
+                    Container(
+                      width: double.infinity,
+                      height: 16,
+                      color: Colors.white,
+                    ),
                     const SizedBox(height: 8),
-                    // Dòng size/color giả
                     Container(width: 120, height: 12, color: Colors.white),
                     const SizedBox(height: 15),
-                    // Dòng giá giả
                     Container(width: 60, height: 16, color: Colors.white),
                     const SizedBox(height: 15),
-                    // Hàng nút giả
                     Row(
                       children: [
                         Container(width: 80, height: 30, color: Colors.white),
                         const Spacer(),
                         Container(width: 30, height: 30, color: Colors.white),
                       ],
-                    )
+                    ),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         );

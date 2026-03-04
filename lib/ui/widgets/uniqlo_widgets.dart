@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Widget Ô nhập liệu Uniqlo
 class UniqloInput extends StatelessWidget {
   final String label;
   final TextEditingController controller;
@@ -22,7 +21,11 @@ class UniqloInput extends StatelessWidget {
       children: [
         Text(
           label.toUpperCase(),
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -32,13 +35,14 @@ class UniqloInput extends StatelessWidget {
           cursorColor: Colors.black,
           style: const TextStyle(fontWeight: FontWeight.w500),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 18),
-            // Viền khi không focus: Xám nhạt
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 18,
+            ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
-              borderRadius: BorderRadius.zero, // Góc vuông
+              borderRadius: BorderRadius.zero,
             ),
-            // Viền khi focus: Đen đậm
             focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.black, width: 1.5),
               borderRadius: BorderRadius.zero,
@@ -52,7 +56,6 @@ class UniqloInput extends StatelessWidget {
   }
 }
 
-// Widget Nút bấm Uniqlo
 class UniqloButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
@@ -75,18 +78,24 @@ class UniqloButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.black,
           foregroundColor: Colors.white,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero), // Góc vuông
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           elevation: 0,
         ),
         child: isLoading
             ? const SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
               )
             : Text(
                 text.toUpperCase(),
-                style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
               ),
       ),
     );

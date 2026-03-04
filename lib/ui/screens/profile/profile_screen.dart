@@ -17,7 +17,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    // Gọi API lấy thông tin profile ngay khi người dùng vào tab Profile
     Future.microtask(() {
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       if (authProv.isAuthenticated) {
@@ -51,7 +50,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Giao diện hiển thị cho khách (chưa đăng nhập)
   Widget _buildGuestView(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(24.0),
@@ -83,7 +81,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Giao diện hiển thị cho thành viên (đã đăng nhập)
   Widget _buildMemberView(AuthProvider prov) {
     if (prov.isLoading) {
       return const Center(
@@ -95,7 +92,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return ListView(
       children: [
-        // Phần Welcome Box
         Container(
           padding: const EdgeInsets.all(24),
           color: const Color(0xFFF7F7F7),
@@ -123,22 +119,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
 
-        // Danh sách Menu tùy chọn
         _buildMenuTile(
           Icons.shopping_bag_outlined,
           "MY ORDERS",
           "View and track your orders",
-          onTap: () {
-            // Sẽ phát triển trang Order History sau
-          },
+          onTap: () {},
         ),
         _buildMenuTile(
           Icons.favorite_border,
           "WISHLIST",
           "Your favorite sneakers",
-          onTap: () {
-            // Sẽ phát triển trang Wishlist sau
-          },
+          onTap: () {},
         ),
         _buildMenuTile(
           Icons.person_outline,
@@ -169,7 +160,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         const SizedBox(height: 40),
 
-        // Nút Đăng xuất
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: TextButton(
@@ -196,7 +186,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Widget dùng chung cho các hàng Menu
   Widget _buildMenuTile(
     IconData icon,
     String title,

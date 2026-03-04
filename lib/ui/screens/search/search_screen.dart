@@ -34,7 +34,6 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: Column(
         children: [
-          // Thanh tìm kiếm phong cách Uniqlo (Phẳng, viền đen mảnh)
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -66,7 +65,6 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
           ),
 
-          // Kết quả tìm kiếm
           Expanded(
             child: productProv.isLoading
                 ? const Center(

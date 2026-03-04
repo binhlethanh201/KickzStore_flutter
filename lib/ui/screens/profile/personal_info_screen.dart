@@ -15,30 +15,32 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
-  
-  // Các trường địa chỉ chi tiết theo Backend
+
   late TextEditingController _streetController;
   late TextEditingController _cityController;
   late TextEditingController _districtController;
-  
-  String _selectedGender = "M"; // M, F, O
+
+  String _selectedGender = "M";
 
   @override
   void initState() {
     super.initState();
     final user = Provider.of<AuthProvider>(context, listen: false).userProfile;
-    
-    _firstNameController = TextEditingController(text: user?['firstName'] ?? '');
+
+    _firstNameController = TextEditingController(
+      text: user?['firstName'] ?? '',
+    );
     _lastNameController = TextEditingController(text: user?['lastName'] ?? '');
     _emailController = TextEditingController(text: user?['email'] ?? '');
     _phoneController = TextEditingController(text: user?['phone'] ?? '');
-    
-    // Khởi tạo Address lồng nhau
+
     final address = user?['address'];
     _streetController = TextEditingController(text: address?['street'] ?? '');
     _cityController = TextEditingController(text: address?['city'] ?? '');
-    _districtController = TextEditingController(text: address?['district'] ?? '');
-    
+    _districtController = TextEditingController(
+      text: address?['district'] ?? '',
+    );
+
     _selectedGender = user?['gender'] ?? "M";
   }
 
@@ -54,7 +56,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     super.dispose();
   }
 
-  // Hàm helper để xây dựng nút chọn giới tính
   Widget _buildGenderOption(String value, String label) {
     bool isSelected = _selectedGender == value;
     return Expanded(
@@ -114,8 +115,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 30),
-
-            // Hàng: Tên
             Row(
               children: [
                 Expanded(
@@ -135,10 +134,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             ),
             const SizedBox(height: 25),
 
-            // Chọn Giới tính
             const Text(
               "GENDER",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
             const SizedBox(height: 10),
             Row(
@@ -165,7 +167,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             ),
             const SizedBox(height: 35),
 
-            // Phần địa chỉ chi tiết
             const Text(
               "SHIPPING ADDRESS",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
@@ -175,9 +176,19 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             const SizedBox(height: 20),
             Row(
               children: [
-                Expanded(child: UniqloInput(label: "District", controller: _districtController)),
+                Expanded(
+                  child: UniqloInput(
+                    label: "District",
+                    controller: _districtController,
+                  ),
+                ),
                 const SizedBox(width: 15),
-                Expanded(child: UniqloInput(label: "City", controller: _cityController)),
+                Expanded(
+                  child: UniqloInput(
+                    label: "City",
+                    controller: _cityController,
+                  ),
+                ),
               ],
             ),
 
@@ -189,7 +200,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               onPressed: () async {
                 FocusScope.of(context).unfocus();
 
-                // Tạo Map đúng cấu trúc lồng nhau mà Backend yêu cầu
                 final Map<String, dynamic> updateData = {
                   "firstName": _firstNameController.text.trim(),
                   "lastName": _lastNameController.text.trim(),
@@ -200,13 +210,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                     "street": _streetController.text.trim(),
                     "city": _cityController.text.trim(),
                     "district": _districtController.text.trim(),
-                    "country": authProv.userProfile?['address']?['country'] ?? "Vietnam",
-                  }
+                    "country":
+                        authProv.userProfile?['address']?['country'] ??
+                        "Vietnam",
+                  },
                 };
 
-                // Giữ lại ngày sinh nếu đã có sẵn
                 if (authProv.userProfile?['dateOfBirth'] != null) {
-                  updateData["dateOfBirth"] = authProv.userProfile!['dateOfBirth'];
+                  updateData["dateOfBirth"] =
+                      authProv.userProfile!['dateOfBirth'];
                 }
 
                 final success = await authProv.updateProfile(updateData);

@@ -20,11 +20,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
     Future.microtask(() {
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       if (authProv.isAuthenticated) {
-        // Lấy ID an toàn
-        final userId = authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];
+        final userId =
+            authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];
         if (userId != null) {
-          Provider.of<WishlistProvider>(context, listen: false)
-              .fetchWishlist(userId.toString());
+          Provider.of<WishlistProvider>(
+            context,
+            listen: false,
+          ).fetchWishlist(userId.toString());
         }
       }
     });
@@ -34,7 +36,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget build(BuildContext context) {
     final wishlistProv = Provider.of<WishlistProvider>(context);
     final authProv = Provider.of<AuthProvider>(context);
-    final currentUserId = authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];
+    final currentUserId =
+        authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -63,9 +66,16 @@ class _WishlistScreenState extends State<WishlistScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.favorite_outline, size: 100, color: Color(0xFFEEEEEE)),
+          const Icon(
+            Icons.favorite_outline,
+            size: 100,
+            color: Color(0xFFEEEEEE),
+          ),
           const SizedBox(height: 30),
-          const Text("SAVE YOUR FAVORITES", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+          const Text(
+            "SAVE YOUR FAVORITES",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 10),
           const Text(
             "Log in to save items to your wishlist and access them from any device.",
@@ -87,13 +97,17 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
   Widget _buildMemberWishlist(WishlistProvider prov, String? userId) {
     if (prov.isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.black));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.black),
+      );
     }
 
     if (prov.wishlistItems.isEmpty) {
       return const Center(
-        child: Text("YOUR WISHLIST IS EMPTY", 
-          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+        child: Text(
+          "YOUR WISHLIST IS EMPTY",
+          style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+        ),
       );
     }
 
@@ -103,26 +117,24 @@ class _WishlistScreenState extends State<WishlistScreen> {
       separatorBuilder: (context, index) => const Divider(height: 40),
       itemBuilder: (context, index) {
         final product = prov.wishlistItems[index];
-        // Tạo tag duy nhất cho wishlist để Hero Animation nhận diện đúng
-        final String wishlistHeroTag = "${product.id}-wishlist"; 
+        final String wishlistHeroTag = "${product.id}-wishlist";
 
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Ảnh sản phẩm có Hero
             Hero(
               tag: wishlistHeroTag,
               child: Image.network(
-                product.img, 
-                width: 110, 
-                height: 130, 
+                product.img,
+                width: 110,
+                height: 130,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(width: 110, height: 130, color: Colors.grey[200]),
+                errorBuilder: (context, error, stackTrace) =>
+                    Container(width: 110, height: 130, color: Colors.grey[200]),
               ),
             ),
             const SizedBox(width: 15),
 
-            // 2. Thông tin chi tiết
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,20 +144,34 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     children: [
                       Text(
                         product.brand.toUpperCase(),
-                        style: const TextStyle(fontSize: 10, color: Colors.grey, fontWeight: FontWeight.bold, letterSpacing: 1),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                        ),
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (userId != null) prov.toggleWishlist(product, userId);
+                          if (userId != null)
+                            prov.toggleWishlist(product, userId);
                         },
-                        child: const Icon(Icons.close, size: 20, color: Colors.black),
+                        child: const Icon(
+                          Icons.close,
+                          size: 20,
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     product.name.toUpperCase(),
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, height: 1.2),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      height: 1.2,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -157,11 +183,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   const SizedBox(height: 10),
                   Text(
                     "\$${product.price.toInt()}",
-                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xFFE60012), fontSize: 17),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFFE60012),
+                      fontSize: 17,
+                    ),
                   ),
                   const SizedBox(height: 12),
 
-                  // Nút xem chi tiết
                   SizedBox(
                     height: 35,
                     child: OutlinedButton(
@@ -176,12 +205,18 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       ),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.black),
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                       ),
                       child: const Text(
                         "VIEW DETAILS",
-                        style: TextStyle(color: Colors.black, fontSize: 11, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

@@ -19,8 +19,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _showSnackBar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message.toUpperCase(), 
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+        content: Text(
+          message.toUpperCase(),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
         backgroundColor: isError ? Colors.red[900] : Colors.black,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(20),
@@ -45,17 +51,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("CREATE ACCOUNT", style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+            const Text(
+              "CREATE ACCOUNT",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
+            ),
             const SizedBox(height: 10),
-            const Text("Become a member and enjoy exclusive benefits.", 
-              style: TextStyle(color: Colors.grey, fontSize: 16)),
+            const Text(
+              "Become a member and enjoy exclusive benefits.",
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
             const SizedBox(height: 40),
 
             Row(
               children: [
-                Expanded(child: UniqloInput(label: "First Name", controller: _firstNameController)),
+                Expanded(
+                  child: UniqloInput(
+                    label: "First Name",
+                    controller: _firstNameController,
+                  ),
+                ),
                 const SizedBox(width: 15),
-                Expanded(child: UniqloInput(label: "Last Name", controller: _lastNameController)),
+                Expanded(
+                  child: UniqloInput(
+                    label: "Last Name",
+                    controller: _lastNameController,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -70,14 +91,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               controller: _passwordController,
               isPassword: true,
             ),
-            
+
             const SizedBox(height: 40),
             UniqloButton(
               text: "Register",
               isLoading: authProvider.isLoading,
               onPressed: () async {
-                // Validation cơ bản
-                if (_firstNameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
+                if (_firstNameController.text.isEmpty ||
+                    _emailController.text.isEmpty ||
+                    _passwordController.text.isEmpty) {
                   _showSnackBar("Please fill in all required fields");
                   return;
                 }
@@ -91,10 +113,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 if (mounted) {
                   if (success) {
-                    _showSnackBar("Account created! Please log in.", isError: false);
+                    _showSnackBar(
+                      "Account created! Please log in.",
+                      isError: false,
+                    );
                     Navigator.pop(context);
                   } else {
-                    _showSnackBar(authProvider.errorMessage ?? "Registration failed");
+                    _showSnackBar(
+                      authProvider.errorMessage ?? "Registration failed",
+                    );
                   }
                 }
               },

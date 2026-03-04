@@ -4,24 +4,24 @@ import '../screens/product/product_detail_screen.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductModel product;
-  final String? tagSuffix; // Thêm suffix để tránh trùng Hero tag
+  final String? tagSuffix;
 
   const ProductCard({super.key, required this.product, this.tagSuffix});
 
   @override
   Widget build(BuildContext context) {
-    // Tạo tag duy nhất: ví dụ "productID-trending"
-    final String heroTag = "${product.id}-${tagSuffix ?? ''}";
+    final String suffix = (tagSuffix == null || tagSuffix!.isEmpty)
+        ? 'card'
+        : tagSuffix!;
+    final String heroTag = "${product.id}-$suffix";
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailScreen(
-              product: product,
-              heroTag: heroTag, 
-            ),
+            builder: (context) =>
+                ProductDetailScreen(product: product, heroTag: heroTag),
           ),
         );
       },
@@ -30,7 +30,7 @@ class ProductCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Hero(
-            tag: heroTag, 
+            tag: heroTag,
             child: AspectRatio(
               aspectRatio: 1 / 1.2,
               child: Container(
@@ -38,7 +38,9 @@ class ProductCard extends StatelessWidget {
                   color: const Color(0xFFF7F7F7),
                   image: DecorationImage(
                     image: NetworkImage(
-                      product.img.isNotEmpty ? product.img : 'https://via.placeholder.com/300',
+                      product.img.isNotEmpty
+                          ? product.img
+                          : 'https://via.placeholder.com/300',
                     ),
                     fit: BoxFit.cover,
                   ),
@@ -49,7 +51,11 @@ class ProductCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             product.brand.toUpperCase(),
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.grey),
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+            ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -58,7 +64,11 @@ class ProductCard extends StatelessWidget {
             height: 35,
             child: Text(
               product.name,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, height: 1.2),
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                height: 1.2,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -66,7 +76,11 @@ class ProductCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             "\$${product.price.toStringAsFixed(2)}",
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFFE60012)),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE60012),
+            ),
           ),
         ],
       ),

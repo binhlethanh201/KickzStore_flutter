@@ -1,4 +1,3 @@
-// lib/ui/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/product_provider.dart';
@@ -19,8 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.microtask(() {
       final prov = Provider.of<ProductProvider>(context, listen: false);
       prov.fetchCategories();
-      prov.fetchProducts(); // All products
-      // Bạn có thể tạo thêm hàm fetchFeatured trong Provider tương tự fetchProducts
+      prov.fetchProducts();
     });
   }
 
@@ -42,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         actions: [
-          // NÚT GIỎ HÀNG LUÔN XUẤT HIỆN Ở GÓC TRÊN
           IconButton(
             onPressed: () {
               Navigator.push(
@@ -63,28 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. HERO BANNER (Dành cho sản phẩm Featured)
             _buildHeroBanner(productProv),
-
             const SizedBox(height: 30),
-
-            // 2. CATEGORY NAVIGATION (Tabs phẳng)
             _buildCategorySection(productProv),
-
             const SizedBox(height: 20),
-
-            // 3. TRENDING NOW (Dựa trên route by-price hoặc getAll)
             _buildSectionTitle("TRENDING NOW"),
             _buildHorizontalProductList(productProv),
-
             const SizedBox(height: 40),
-
-            // 4. MULTI-COLOR COLLECTION (Dựa trên route by-color-count)
             _buildPromoBanner(),
-
             const SizedBox(height: 40),
-
-            // 5. ALL ITEMS (Grid View chính)
             _buildSectionTitle("EXPLORE ALL"),
             _buildProductGrid(productProv),
           ],
@@ -93,8 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // --- WIDGET COMPONENTS ---
-
   Widget _buildHeroBanner(ProductProvider prov) {
     return Container(
       width: double.infinity,
@@ -102,10 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
       color: Colors.grey[100],
       child: Stack(
         children: [
-          // Giả sử lấy cái ảnh đầu tiên của sản phẩm Featured làm Banner
           Positioned.fill(
             child: Image.network(
-              "https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070", // Thay bằng product image thật
+              "https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070",
               fit: BoxFit.cover,
             ),
           ),
@@ -218,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(30),
-      color: const Color(0xFFE60012), // Uniqlo Red
+      color: const Color(0xFFE60012),
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

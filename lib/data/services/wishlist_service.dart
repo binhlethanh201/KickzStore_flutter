@@ -14,7 +14,6 @@ class WishlistService {
     };
   }
 
-  // Lấy danh sách yêu thích của User
   Future<List<ProductModel>> getWishlist(String userId) async {
     final response = await http.get(
       Uri.parse('${ApiConstants.baseUrl}/wishlists/user/$userId'),
@@ -29,7 +28,6 @@ class WishlistService {
     }
   }
 
-  // Thêm vào danh sách yêu thích
   Future<void> addToWishlist(String productId) async {
     final response = await http.post(
       Uri.parse('${ApiConstants.baseUrl}/wishlists'),
@@ -41,7 +39,6 @@ class WishlistService {
     }
   }
 
-  // Xóa khỏi danh sách yêu thích
   Future<void> removeFromWishlist(String productId) async {
     final response = await http.delete(
       Uri.parse('${ApiConstants.baseUrl}/wishlists/$productId'),

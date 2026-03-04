@@ -47,7 +47,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Gọi hàm này trong main hoặc khởi tạo Provider
   Future<void> checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('jwt_token');
@@ -65,11 +64,7 @@ class AuthProvider with ChangeNotifier {
   ) async {
     try {
       _token = await _authService.login(email, password);
-
-      // Lấy thông tin Profile ngay lập tức
       await fetchProfile();
-
-      // TỰ ĐỘNG FETCH DỮ LIỆU SAU KHI LOGIN
       final userId = _userProfile?['id'];
       if (userId != null) {
         Provider.of<CartProvider>(context, listen: false).fetchCart(userId);
@@ -120,9 +115,8 @@ class AuthProvider with ChangeNotifier {
       }
       return false;
     } catch (e) {
-      // Lưu lại thông báo lỗi từ catch để hiển thị lên SnackBar
       _errorMessage = e.toString();
-      debugPrint("UPDATE ERROR: $e"); // Xem ở debug console của Flutter
+      debugPrint("UPDATE ERROR: $e");
       return false;
     } finally {
       _isLoading = false;

@@ -12,9 +12,9 @@ class CartProvider with ChangeNotifier {
 
   Future<void> fetchCart(String userId, {bool isSilent = false}) async {
     if (!isSilent) {
-    _isLoading = true; 
-    notifyListeners();
-  }
+      _isLoading = true;
+      notifyListeners();
+    }
     try {
       _cart = await _cartService.getCart(userId);
     } catch (e) {
@@ -54,8 +54,7 @@ class CartProvider with ChangeNotifier {
     String? color,
     String userId,
   ) async {
-    if (newQuantity < 1)
-      return; 
+    if (newQuantity < 1) return;
 
     try {
       await _cartService.updateQuantity(productId, newQuantity, size, color);

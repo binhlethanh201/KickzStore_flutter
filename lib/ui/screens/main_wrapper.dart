@@ -15,7 +15,6 @@ class MainWrapper extends StatefulWidget {
 class _MainWrapperState extends State<MainWrapper> {
   int _selectedIndex = 0;
 
-  // Danh sách các màn hình tương ứng với các icon
   final List<Widget> _screens = [
     const HomeScreen(),
     const SearchScreen(),
@@ -26,10 +25,7 @@ class _MainWrapperState extends State<MainWrapper> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           border: Border(top: BorderSide(color: Colors.grey[200]!, width: 1)),

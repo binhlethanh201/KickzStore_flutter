@@ -4,6 +4,7 @@ import '../../../providers/auth_provider.dart';
 import '../../widgets/uniqlo_widgets.dart';
 import '../main_wrapper.dart';
 import 'register_screen.dart';
+import '../admin/admin_main_wrapper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,7 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // Hàm hiển thị thông báo nhanh
   void _showSnackBar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -31,9 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: isError ? Colors.red[900] : Colors.black,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(20),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-        ), // Góc vuông Uniqlo
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
       ),
     );
   }
@@ -86,14 +84,11 @@ class _LoginScreenState extends State<LoginScreen> {
               text: "Log In",
               isLoading: authProvider.isLoading,
               onPressed: () async {
-                // 1. Kiểm tra Client-side Validation
                 if (_emailController.text.isEmpty ||
                     _passwordController.text.isEmpty) {
                   _showSnackBar("Please fill in all fields");
                   return;
                 }
-
-                // 2. Gọi API
                 final success = await authProvider.login(
                   _emailController.text.trim(),
                   _passwordController.text,
@@ -103,13 +98,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (mounted) {
                   if (success) {
                     _showSnackBar("Welcome back!", isError: false);
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MainWrapper(),
-                      ),
-                      (route) => false,
-                    );
+                    final role = authProvider.userProfile?['role'];
+
+                    if (role == 'admin') {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AdminMainWrapper(),
+                        ),
+                        (route) => false,
+                      );
+                    } else {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainWrapper(),
+                        ),
+                        (route) => false,
+                      );
+                    }
                   } else {
                     _showSnackBar(authProvider.errorMessage ?? "Login failed");
                   }

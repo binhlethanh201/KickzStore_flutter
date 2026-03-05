@@ -222,26 +222,25 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 }
 
                 final success = await authProv.updateProfile(updateData);
+                if (!context.mounted) return;
 
-                if (mounted) {
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("PROFILE UPDATED SUCCESSFULLY!"),
-                        backgroundColor: Colors.black,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                    Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(authProv.errorMessage ?? "UPDATE FAILED"),
-                        backgroundColor: Colors.red[900],
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("PROFILE UPDATED SUCCESSFULLY!"),
+                      backgroundColor: Colors.black,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(authProv.errorMessage ?? "UPDATE FAILED"),
+                      backgroundColor: Colors.red[900],
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
                 }
               },
             ),

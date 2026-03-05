@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/constants/api_constants.dart';
@@ -15,7 +17,7 @@ class ReviewService {
         return data.map((item) => ReviewModel.fromJson(item)).toList();
       }
     } catch (e) {
-      print("Error fetching reviews: $e");
+      debugPrint("Error fetching reviews: $e");
     }
     return [];
   }
@@ -45,6 +47,7 @@ class ReviewService {
       );
       return response.statusCode == 201;
     } catch (e) {
+      log("Error creating review", error: e);
       return false;
     }
   }
@@ -67,6 +70,7 @@ class ReviewService {
       );
       return response.statusCode == 200;
     } catch (e) {
+      log("Error replying review", error: e);
       return false;
     }
   }

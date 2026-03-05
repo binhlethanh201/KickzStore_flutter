@@ -3,7 +3,6 @@ import 'home/home_screen.dart';
 import 'search/search_screen.dart';
 import 'profile/profile_screen.dart';
 import 'wishlist/wishlist_screen.dart';
-import 'cart/cart_screen.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
 import '../../../../data/services/admin_service.dart';
+import '../../../../providers/auth_provider.dart';
+import '../../auth/login_screen.dart';
 
 class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({super.key});
@@ -8,6 +11,7 @@ class AdminDashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final adminService = AdminService();
+    final authProv = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -15,12 +19,20 @@ class AdminDashboardScreen extends StatelessWidget {
           "DASHBOARD OVERVIEW",
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
         ),
+        actions: [
+          IconButton(
+            onPressed: () => _showLogoutDialog(context, authProv),
+            icon: const Icon(Icons.logout, color: Colors.black, size: 20),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: FutureBuilder(
         future: adminService.getDashboardStats(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final stats = snapshot.data!;
 
           return SingleChildScrollView(
@@ -77,6 +89,40 @@ class AdminDashboardScreen extends StatelessWidget {
     );
   }
 
+  void _showLogoutDialog(BuildContext context, AuthProvider authProv) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+        title: const Text(
+          "CONFIRM LOGOUT",
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+        ),
+        content: const Text("Are you sure you want to exit Admin Panel?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("CANCEL", style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () {
+              authProv.logout();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (route) => false,
+              );
+            },
+            child: const Text(
+              "LOGOUT",
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildStatCard(String label, String value, Color color) {
     return Expanded(
       child: Container(
@@ -86,7 +132,10 @@ class AdminDashboardScreen extends StatelessWidget {
           color: Colors.white,
           border: Border(left: BorderSide(color: color, width: 4)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+            ),
           ],
         ),
         child: Column(
@@ -130,7 +179,7 @@ class AdminDashboardScreen extends StatelessWidget {
             barWidth: 4,
             belowBarData: BarAreaData(
               show: true,
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
             ),
           ),
         ],

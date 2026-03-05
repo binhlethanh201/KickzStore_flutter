@@ -65,6 +65,7 @@ class AuthProvider with ChangeNotifier {
     try {
       _token = await _authService.login(email, password);
       await fetchProfile();
+      if (!context.mounted) return true;
       final userId = _userProfile?['id'];
       if (userId != null) {
         Provider.of<CartProvider>(context, listen: false).fetchCart(userId);

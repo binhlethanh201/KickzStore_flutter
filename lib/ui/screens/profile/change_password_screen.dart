@@ -100,23 +100,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   _newPasswordController.text,
                 );
 
-                if (mounted) {
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Password updated successfully"),
-                        backgroundColor: Colors.black,
-                      ),
-                    );
-                    Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(authProv.errorMessage ?? "Update failed"),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
+                if (!context.mounted) return;
+
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Password updated successfully"),
+                      backgroundColor: Colors.black,
+                    ),
+                  );
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(authProv.errorMessage ?? "Update failed"),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               },
             ),

@@ -4,6 +4,8 @@ import 'personal_info_screen.dart';
 import 'change_password_screen.dart';
 import '../../../providers/auth_provider.dart';
 import '../auth/login_screen.dart';
+import '../wishlist/wishlist_screen.dart';
+import '../order/order_screen.dart';
 import '../../widgets/uniqlo_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      if (!mounted) return;
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       if (authProv.isAuthenticated) {
         authProv.fetchProfile();
@@ -123,13 +126,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Icons.shopping_bag_outlined,
           "MY ORDERS",
           "View and track your orders",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const OrderScreen()),
+            );
+          },
         ),
         _buildMenuTile(
           Icons.favorite_border,
           "WISHLIST",
           "Your favorite sneakers",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WishlistScreen()),
+            );
+          },
         ),
         _buildMenuTile(
           Icons.person_outline,

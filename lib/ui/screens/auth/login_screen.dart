@@ -18,6 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   void _showSnackBar(String message, {bool isError = true}) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -95,31 +96,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   context,
                 );
 
-                if (mounted) {
-                  if (success) {
-                    _showSnackBar("Welcome back!", isError: false);
-                    final role = authProvider.userProfile?['role'];
+                if (!context.mounted) return;
 
-                    if (role == 'admin') {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AdminMainWrapper(),
-                        ),
-                        (route) => false,
-                      );
-                    } else {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MainWrapper(),
-                        ),
-                        (route) => false,
-                      );
-                    }
+                if (success) {
+                  _showSnackBar("Welcome back!", isError: false);
+                  final role = authProvider.userProfile?['role'];
+
+                  if (role == 'admin') {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdminMainWrapper(),
+                      ),
+                      (route) => false,
+                    );
                   } else {
-                    _showSnackBar(authProvider.errorMessage ?? "Login failed");
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MainWrapper(),
+                      ),
+                      (route) => false,
+                    );
                   }
+                } else {
+                  _showSnackBar(authProvider.errorMessage ?? "Login failed");
                 }
               },
             ),

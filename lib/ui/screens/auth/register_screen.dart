@@ -111,18 +111,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   _passwordController.text,
                 );
 
-                if (mounted) {
-                  if (success) {
-                    _showSnackBar(
-                      "Account created! Please log in.",
-                      isError: false,
-                    );
-                    Navigator.pop(context);
-                  } else {
-                    _showSnackBar(
-                      authProvider.errorMessage ?? "Registration failed",
-                    );
-                  }
+                if (!context.mounted) return;
+
+                if (success) {
+                  _showSnackBar(
+                    "Account created! Please log in.",
+                    isError: false,
+                  );
+                  Navigator.pop(context);
+                } else {
+                  _showSnackBar(
+                    authProvider.errorMessage ?? "Registration failed",
+                  );
                 }
               },
             ),

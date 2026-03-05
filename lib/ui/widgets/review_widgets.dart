@@ -102,37 +102,35 @@ class ReviewSection extends StatelessWidget {
               ),
 
             if (rev.replies.isNotEmpty)
-              ...rev.replies
-                  .map(
-                    (r) => Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(top: 10, left: 20),
-                      padding: const EdgeInsets.all(12),
-                      color: Colors.grey[50],
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            r.userName.toUpperCase(),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 10,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            r.comment,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
+              ...rev.replies.map(
+                (r) => Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 10, left: 20),
+                  padding: const EdgeInsets.all(12),
+                  color: Colors.grey[50],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        r.userName.toUpperCase(),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 10,
+                          letterSpacing: 1,
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
+                      const SizedBox(height: 4),
+                      Text(
+                        r.comment,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         );
       },

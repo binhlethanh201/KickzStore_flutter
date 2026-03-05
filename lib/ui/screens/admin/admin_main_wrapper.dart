@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dashboard/admin_dashboard_screen.dart';
 import 'orders/admin_orders_screen.dart';
 import 'products/admin_products_screen.dart';
+import 'users/admin_users_screen.dart';
+import 'vouchers/admin_vouchers_screen.dart';
 
 class AdminMainWrapper extends StatefulWidget {
   const AdminMainWrapper({super.key});
@@ -17,8 +19,8 @@ class _AdminMainWrapperState extends State<AdminMainWrapper> {
     const AdminDashboardScreen(),
     const AdminOrdersScreen(),
     const AdminProductsScreen(),
-    const Center(child: Text("Vouchers Management")),
-    const Center(child: Text("Users Management")),
+    const AdminVouchersScreen(),
+    const AdminUsersScreen(),
   ];
 
   @override

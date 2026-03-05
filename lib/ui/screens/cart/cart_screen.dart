@@ -19,6 +19,7 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      if (!mounted) return;
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       final userId =
           authProv.userProfile?['id'] ?? authProv.userProfile?['_id'];

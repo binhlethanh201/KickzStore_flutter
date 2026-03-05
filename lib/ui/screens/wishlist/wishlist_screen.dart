@@ -18,6 +18,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      if (!mounted) return;
       final authProv = Provider.of<AuthProvider>(context, listen: false);
       if (authProv.isAuthenticated) {
         final userId =
@@ -153,8 +154,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          if (userId != null)
+                          if (userId != null) {
                             prov.toggleWishlist(product, userId);
+                          }
                         },
                         child: const Icon(
                           Icons.close,

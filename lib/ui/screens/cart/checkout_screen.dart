@@ -18,6 +18,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController _voucherController = TextEditingController();
 
   @override
+  void dispose() {
+    _voucherController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authProv = Provider.of<AuthProvider>(context);
     final cartProv = Provider.of<CartProvider>(context);
@@ -66,21 +72,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 30),
 
             _buildSectionTitle("SHIPPING METHOD"),
-            RadioListTile(
-              title: const Text("Standard Shipping (Free)"),
+            // FIX: Quay lại dùng RadioListTile tiêu chuẩn để tránh lỗi undefined_named_parameter
+            RadioListTile<String>(
+              title: const Text("Standard Shipping (Free)", style: TextStyle(fontSize: 14)),
               value: "standard",
               groupValue: _shippingMethod,
-              onChanged: (v) => setState(() => _shippingMethod = v.toString()),
+              onChanged: (v) => setState(() => _shippingMethod = v!),
               contentPadding: EdgeInsets.zero,
               activeColor: Colors.black,
+              controlAffinity: ListTileControlAffinity.trailing,
             ),
-            RadioListTile(
-              title: const Text("Express Shipping (\$5.00)"),
+            RadioListTile<String>(
+              title: const Text("Express Shipping (\$5.00)", style: TextStyle(fontSize: 14)),
               value: "express",
               groupValue: _shippingMethod,
-              onChanged: (v) => setState(() => _shippingMethod = v.toString()),
+              onChanged: (v) => setState(() => _shippingMethod = v!),
               contentPadding: EdgeInsets.zero,
               activeColor: Colors.black,
+              controlAffinity: ListTileControlAffinity.trailing,
             ),
             const SizedBox(height: 30),
 
@@ -91,6 +100,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               "credit_card",
               "Credit Card (Mockup)",
               Icons.credit_card,
+            ),
+            const SizedBox(height: 30),
+
+            _buildSectionTitle("PROMO CODE"),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: UniqloInput(
+                    label: "Voucher Code",
+                    controller: _voucherController,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  height: 50,
+                  child: OutlinedButton(
+                    onPressed: () {
+                      if (_voucherController.text.isNotEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("PROMO CODE APPLIED")),
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.black),
+                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    ),
+                    child: const Text("APPLY", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 30),
 
@@ -115,24 +156,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               onPressed: () async {
                 if (addressObj == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        "Please update your shipping address in profile!",
-                      ),
-                    ),
+                    const SnackBar(content: Text("Please update your shipping address in profile!")),
                   );
                   return;
                 }
 
                 final selectedItems = cartProv.cart!.items
-                    .map(
-                      (item) => {
-                        "productId": item.productId,
-                        "size": item.size,
-                        "color": item.color,
-                        "quantity": item.quantity,
-                      },
-                    )
+                    .map((item) => {
+                          "productId": item.productId,
+                          "size": item.size,
+                          "color": item.color,
+                          "quantity": item.quantity,
+                        })
                     .toList();
 
                 await orderProv.placeOrder(
@@ -142,43 +177,34 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   paymentMethod: _paymentMethod,
                   onSuccess: () {
                     cartProv.fetchCart(
-                      authProv.userProfile?['id'] ??
-                          authProv.userProfile?['_id'],
+                      authProv.userProfile?['id'] ?? authProv.userProfile?['_id'],
                     );
+                    
+                    if (!context.mounted) return;
+                    
                     showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (ctx) => AlertDialog(
-                        title: const Text("SUCCESS"),
-                        content: const Text(
-                          "Your order has been placed successfully!",
-                        ),
+                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                        title: const Text("SUCCESS", style: TextStyle(fontWeight: FontWeight.bold)),
+                        content: const Text("Your order has been placed successfully!"),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.of(ctx).pop();
-                              Navigator.of(
-                                context,
-                              ).popUntil((route) => route.isFirst);
+                              Navigator.of(context).popUntil((route) => route.isFirst);
                             },
-                            child: const Text(
-                              "BACK TO HOME",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: const Text("BACK TO HOME", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
                     );
                   },
                   onError: (err) {
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(err),
-                        backgroundColor: Colors.red[900],
-                      ),
+                      SnackBar(content: Text(err), backgroundColor: Colors.red[900]),
                     );
                   },
                 );

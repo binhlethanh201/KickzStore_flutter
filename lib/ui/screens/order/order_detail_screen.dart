@@ -223,8 +223,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           child: Image.network(
                             prod['img'],
                             fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) =>
-                                const Icon(Icons.image),
+                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
                           ),
                         ),
                         const SizedBox(width: 15),

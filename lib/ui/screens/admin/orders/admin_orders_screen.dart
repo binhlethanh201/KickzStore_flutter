@@ -185,7 +185,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                       orderId,
                       s,
                     );
-                    if (!context.mounted) return;
+
+                    // SỬA Ở ĐÂY: Check cả 2 mounted
+                    if (!mounted || !ctx.mounted) return;
+
                     if (success) {
                       setState(() {});
                       Navigator.pop(ctx);
@@ -220,7 +223,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
           TextButton(
             onPressed: () async {
               final success = await _adminService.deleteOrder(orderId);
-              if (!context.mounted) return;
+
+              // SỬA Ở ĐÂY: Check cả 2 mounted
+              if (!mounted || !ctx.mounted) return;
+
               if (success) {
                 setState(() {});
                 Navigator.pop(ctx);
@@ -283,7 +289,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                     leading: Image.network(
                       prod['img'] ?? '',
                       width: 40,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.image),
                     ),
                     title: Text(
                       prod['name'] ?? 'Unknown Product',

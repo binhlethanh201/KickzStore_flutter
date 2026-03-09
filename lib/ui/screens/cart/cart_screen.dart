@@ -15,6 +15,8 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  Set<String> _selectedItems = {};
+
   @override
   void initState() {
     super.initState();
@@ -27,9 +29,34 @@ class _CartScreenState extends State<CartScreen> {
         Provider.of<CartProvider>(
           context,
           listen: false,
-        ).fetchCart(userId.toString());
+        ).fetchCart(userId.toString()).then((_) {
+          _selectAllItems();
+        });
       }
     });
+  }
+
+  void _selectAllItems() {
+    final cartProv = Provider.of<CartProvider>(context, listen: false);
+    if (cartProv.cart != null) {
+      setState(() {
+        _selectedItems = cartProv.cart!.items
+            .map((e) => "${e.productId}_${e.size}_${e.color}")
+            .toSet();
+      });
+    }
+  }
+
+  double _calculateSelectedTotal(CartProvider cartProv) {
+    if (cartProv.cart == null) return 0.0;
+    double total = 0.0;
+    for (var item in cartProv.cart!.items) {
+      String itemKey = "${item.productId}_${item.size}_${item.color}";
+      if (_selectedItems.contains(itemKey)) {
+        total += item.price * item.quantity;
+      }
+    }
+    return total;
   }
 
   @override
@@ -99,8 +126,41 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildMemberCart(CartProvider cartProv, String? userId) {
+    bool isAllSelected =
+        cartProv.cart != null &&
+        _selectedItems.length == cartProv.cart!.items.length;
+    double selectedTotal = _calculateSelectedTotal(cartProv);
+
     return Column(
       children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE))),
+          ),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isAllSelected,
+                activeColor: Colors.black,
+                onChanged: (bool? value) {
+                  setState(() {
+                    if (value == true) {
+                      _selectAllItems();
+                    } else {
+                      _selectedItems.clear();
+                    }
+                  });
+                },
+              ),
+              const Text(
+                "Select All",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ],
+          ),
+        ),
+
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.all(20),
@@ -108,13 +168,29 @@ class _CartScreenState extends State<CartScreen> {
             separatorBuilder: (context, index) => const Divider(height: 40),
             itemBuilder: (context, index) {
               final item = cartProv.cart!.items[index];
+              String itemKey = "${item.productId}_${item.size}_${item.color}";
+              bool isSelected = _selectedItems.contains(itemKey);
+
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Checkbox(
+                    value: isSelected,
+                    activeColor: Colors.black,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          _selectedItems.add(itemKey);
+                        } else {
+                          _selectedItems.remove(itemKey);
+                        }
+                      });
+                    },
+                  ),
                   Image.network(
                     item.img,
-                    width: 100,
-                    height: 120,
+                    width: 90,
+                    height: 110,
                     fit: BoxFit.cover,
                   ),
                   const SizedBox(width: 15),
@@ -145,7 +221,7 @@ class _CartScreenState extends State<CartScreen> {
                         Row(
                           children: [
                             _qtyBtn(Icons.remove, () {
-                              if (userId != null) {
+                              if (userId != null && item.quantity > 1) {
                                 cartProv.updateQuantity(
                                   item.productId,
                                   item.quantity - 1,
@@ -187,6 +263,9 @@ class _CartScreenState extends State<CartScreen> {
                                     item.color,
                                     userId,
                                   );
+                                  setState(
+                                    () => _selectedItems.remove(itemKey),
+                                  );
                                 }
                               },
                             ),
@@ -200,7 +279,7 @@ class _CartScreenState extends State<CartScreen> {
             },
           ),
         ),
-        _buildCheckoutSection(cartProv.cart!.totalPrice),
+        _buildCheckoutSection(selectedTotal, cartProv.cart!.items),
       ],
     );
   }
@@ -229,7 +308,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Widget _buildCheckoutSection(double total) {
+  Widget _buildCheckoutSection(double total, List items) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -257,9 +336,32 @@ class _CartScreenState extends State<CartScreen> {
           UniqloButton(
             text: "Proceed to Checkout",
             onPressed: () {
+              if (_selectedItems.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Please select at least one item to checkout",
+                    ),
+                    backgroundColor: Colors.black,
+                  ),
+                );
+                return;
+              }
+
+              final selectedCartItems = items
+                  .where(
+                    (item) => _selectedItems.contains(
+                      "${item.productId}_${item.size}_${item.color}",
+                    ),
+                  )
+                  .toList();
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CheckoutScreen()),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      CheckoutScreen(selectedCartItems: selectedCartItems),
+                ),
               );
             },
           ),

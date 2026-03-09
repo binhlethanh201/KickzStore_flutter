@@ -14,7 +14,7 @@ class OrderProvider with ChangeNotifier {
     String? voucherCode,
     String? cardId,
     String? cvv,
-    required Function onSuccess,
+    required Function(String?) onSuccess,
     required Function(String) onError,
   }) async {
     _isLoading = true;
@@ -31,8 +31,10 @@ class OrderProvider with ChangeNotifier {
         if (cvv != null) "cvv": cvv,
       };
 
-      await _orderService.createOrder(body);
-      onSuccess();
+      final response = await _orderService.createOrder(body);
+
+      final vnpayUrl = response['vnpayUrl'];
+      onSuccess(vnpayUrl);
     } catch (e) {
       onError(e.toString().replaceAll('Exception: ', ''));
     } finally {

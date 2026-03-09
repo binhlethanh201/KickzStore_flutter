@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../providers/cart_provider.dart';
 import '../../../providers/order_provider.dart';
 import '../../widgets/uniqlo_widgets.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  final List<dynamic> selectedCartItems;
+
+  const CheckoutScreen({super.key, required this.selectedCartItems});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -14,13 +17,39 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   String _shippingMethod = "standard";
-  String _paymentMethod = "cod";
+  String _paymentMethod = "vnpay";
   final TextEditingController _voucherController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProv = Provider.of<AuthProvider>(context, listen: false);
+      final addressObj = authProv.userProfile?['address'];
+      if (addressObj != null && addressObj['street'] != null) {
+        _addressController.text =
+            "${addressObj['street']}, ${addressObj['district']}, ${addressObj['city']}";
+      }
+    });
+  }
 
   @override
   void dispose() {
     _voucherController.dispose();
+    _addressController.dispose();
     super.dispose();
+  }
+
+  Future<void> _launchVNPayUrl(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not launch payment gateway')),
+        );
+      }
+    }
   }
 
   @override
@@ -29,12 +58,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final cartProv = Provider.of<CartProvider>(context);
     final orderProv = Provider.of<OrderProvider>(context);
 
-    final addressObj = authProv.userProfile?['address'];
-    final fullAddress = addressObj != null
-        ? "${addressObj['street']}, ${addressObj['district']}, ${addressObj['city']}"
-        : "No address provided. Please update profile.";
+    double subtotal = 0.0;
+    for (var item in widget.selectedCartItems) {
+      subtotal += (item.price * item.quantity);
+    }
 
-    double subtotal = cartProv.cart?.totalPrice ?? 0;
     double shippingFee = _shippingMethod == "express" ? 5 : 0;
     double total = subtotal + shippingFee;
 
@@ -61,40 +89,67 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             _buildSectionTitle("SHIPPING ADDRESS"),
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(15),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+            TextField(
+              controller: _addressController,
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText:
+                    "Enter your full shipping address (Street, District, City)",
+                hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.zero,
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.zero,
+                  borderSide: BorderSide(color: Colors.black),
+                ),
               ),
-              child: Text(fullAddress, style: const TextStyle(fontSize: 14)),
             ),
             const SizedBox(height: 30),
 
             _buildSectionTitle("SHIPPING METHOD"),
-            // FIX: Quay lại dùng RadioListTile tiêu chuẩn để tránh lỗi undefined_named_parameter
-            RadioListTile<String>(
-              title: const Text("Standard Shipping (Free)", style: TextStyle(fontSize: 14)),
-              value: "standard",
+            RadioGroup<String>(
               groupValue: _shippingMethod,
-              onChanged: (v) => setState(() => _shippingMethod = v!),
-              contentPadding: EdgeInsets.zero,
-              activeColor: Colors.black,
-              controlAffinity: ListTileControlAffinity.trailing,
-            ),
-            RadioListTile<String>(
-              title: const Text("Express Shipping (\$5.00)", style: TextStyle(fontSize: 14)),
-              value: "express",
-              groupValue: _shippingMethod,
-              onChanged: (v) => setState(() => _shippingMethod = v!),
-              contentPadding: EdgeInsets.zero,
-              activeColor: Colors.black,
-              controlAffinity: ListTileControlAffinity.trailing,
+              onChanged: (v) {
+                if (v != null) {
+                  setState(() => _shippingMethod = v);
+                }
+              },
+              child: Column(
+                children: [
+                  RadioListTile<String>(
+                    title: const Text(
+                      "Standard Shipping (Free)",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    value: "standard",
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: Colors.black,
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  ),
+                  RadioListTile<String>(
+                    title: const Text(
+                      "Express Shipping (\$5.00)",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    value: "express",
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: Colors.black,
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 30),
 
             _buildSectionTitle("PAYMENT METHOD"),
             const SizedBox(height: 10),
+            _buildPaymentOption(
+              "vnpay",
+              "Thanh toán VNPay (ATM/Internet Banking)",
+              Icons.account_balance_wallet,
+            ),
             _buildPaymentOption("cod", "Cash on Delivery", Icons.money),
             _buildPaymentOption(
               "credit_card",
@@ -126,9 +181,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     },
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.black),
-                      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
-                    child: const Text("APPLY", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      "APPLY",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -154,57 +217,84 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               text: "PLACE ORDER",
               isLoading: orderProv.isLoading,
               onPressed: () async {
-                if (addressObj == null) {
+                final address = _addressController.text.trim();
+                if (address.isEmpty || address.length < 10) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Please update your shipping address in profile!")),
+                    const SnackBar(
+                      content: Text("Please enter a valid shipping address!"),
+                    ),
                   );
                   return;
                 }
-
-                final selectedItems = cartProv.cart!.items
-                    .map((item) => {
-                          "productId": item.productId,
-                          "size": item.size,
-                          "color": item.color,
-                          "quantity": item.quantity,
-                        })
+                final formattedItems = widget.selectedCartItems
+                    .map(
+                      (item) => {
+                        "productId": item.productId,
+                        "size": item.size,
+                        "color": item.color,
+                        "quantity": item.quantity,
+                      },
+                    )
                     .toList();
 
                 await orderProv.placeOrder(
-                  selectedItems: selectedItems,
+                  selectedItems: formattedItems,
                   shippingMethod: _shippingMethod,
-                  address: fullAddress,
+                  address: address,
                   paymentMethod: _paymentMethod,
-                  onSuccess: () {
+                  onSuccess: (String? vnpayUrl) {
                     cartProv.fetchCart(
-                      authProv.userProfile?['id'] ?? authProv.userProfile?['_id'],
+                      authProv.userProfile?['id'] ??
+                          authProv.userProfile?['_id'],
                     );
-                    
+
                     if (!context.mounted) return;
-                    
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (ctx) => AlertDialog(
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        title: const Text("SUCCESS", style: TextStyle(fontWeight: FontWeight.bold)),
-                        content: const Text("Your order has been placed successfully!"),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(ctx).pop();
-                              Navigator.of(context).popUntil((route) => route.isFirst);
-                            },
-                            child: const Text("BACK TO HOME", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+
+                    if (vnpayUrl != null && vnpayUrl.isNotEmpty) {
+                      _launchVNPayUrl(vnpayUrl);
+                    } else {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (ctx) => AlertDialog(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
                           ),
-                        ],
-                      ),
-                    );
+                          title: const Text(
+                            "SUCCESS",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          content: const Text(
+                            "Your order has been placed successfully!",
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(ctx).pop();
+                                Navigator.of(
+                                  context,
+                                ).popUntil((route) => route.isFirst);
+                              },
+                              child: const Text(
+                                "BACK TO HOME",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                   },
                   onError: (err) {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(err), backgroundColor: Colors.red[900]),
+                      SnackBar(
+                        content: Text(err),
+                        backgroundColor: Colors.red[900],
+                      ),
                     );
                   },
                 );

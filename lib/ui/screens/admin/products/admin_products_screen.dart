@@ -34,13 +34,23 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
         elevation: 0,
         title: const Text(
           "PRODUCTS MANAGEMENT",
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.black),
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+            color: Colors.black,
+          ),
         ),
         actions: [
           TextButton.icon(
             onPressed: () => _showProductForm(),
             icon: const Icon(Icons.add, color: Colors.black),
-            label: const Text("NEW PRODUCT", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+            label: const Text(
+              "NEW PRODUCT",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
         ],
@@ -49,7 +59,9 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
         future: _productsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.black));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.black),
+            );
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text("No products found."));
@@ -71,16 +83,36 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                   child: Image.network(
                     p['img'],
                     fit: BoxFit.contain,
-                    errorBuilder: (_, _, _) => const Icon(Icons.image_not_supported),
+                    errorBuilder: (_, _, _) =>
+                        const Icon(Icons.image_not_supported),
                   ),
                 ),
-                title: Text(p['name'].toString().toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
-                subtitle: Text("${p['brand']} • \$${p['price']}", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                title: Text(
+                  p['name'].toString().toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13,
+                  ),
+                ),
+                subtitle: Text(
+                  "${p['brand']} • \$${p['price']}",
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(icon: const Icon(Icons.edit_outlined, size: 20), onPressed: () => _showProductForm(product: p)),
-                    IconButton(icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20), onPressed: () => _confirmDelete(p['_id'])),
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () => _showProductForm(product: p),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                      onPressed: () => _confirmDelete(p['_id']),
+                    ),
                   ],
                 ),
               );
@@ -91,24 +123,38 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     );
   }
 
-  // --- FORM THÊM/SỬA SẢN PHẨM ---
   void _showProductForm({dynamic product}) {
     final isEdit = product != null;
     final nameCtrl = TextEditingController(text: isEdit ? product['name'] : '');
-    final brandCtrl = TextEditingController(text: isEdit ? product['brand'] : '');
-    final priceCtrl = TextEditingController(text: isEdit ? product['price'].toString() : '');
+    final brandCtrl = TextEditingController(
+      text: isEdit ? product['brand'] : '',
+    );
+    final priceCtrl = TextEditingController(
+      text: isEdit ? product['price'].toString() : '',
+    );
     final imgCtrl = TextEditingController(text: isEdit ? product['img'] : '');
-    final catCtrl = TextEditingController(text: isEdit ? product['category'] : '');
-    final descCtrl = TextEditingController(text: isEdit ? product['description'] : '');
-    // Chuyển mảng Size/Color thành chuỗi để dễ nhập
-    final sizeCtrl = TextEditingController(text: isEdit ? (product['size'] as List).join(', ') : '');
-    final colorCtrl = TextEditingController(text: isEdit ? (product['color'] as List).join(', ') : '');
+    final catCtrl = TextEditingController(
+      text: isEdit ? product['category'] : '',
+    );
+    final descCtrl = TextEditingController(
+      text: isEdit ? product['description'] : '',
+    );
+
+    final sizeCtrl = TextEditingController(
+      text: isEdit ? (product['size'] as List).join(', ') : '',
+    );
+    final colorCtrl = TextEditingController(
+      text: isEdit ? (product['color'] as List).join(', ') : '',
+    );
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-        title: Text(isEdit ? "EDIT PRODUCT" : "ADD NEW KICKS", style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+        title: Text(
+          isEdit ? "EDIT PRODUCT" : "ADD NEW KICKS",
+          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+        ),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -117,9 +163,17 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
               const SizedBox(height: 15),
               Row(
                 children: [
-                  Expanded(child: UniqloInput(label: "Brand", controller: brandCtrl)),
+                  Expanded(
+                    child: UniqloInput(label: "Brand", controller: brandCtrl),
+                  ),
                   const SizedBox(width: 10),
-                  Expanded(child: UniqloInput(label: "Price (\$)", controller: priceCtrl, keyboardType: TextInputType.number)),
+                  Expanded(
+                    child: UniqloInput(
+                      label: "Price (\$)",
+                      controller: priceCtrl,
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 15),
@@ -129,20 +183,40 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
               const SizedBox(height: 15),
               UniqloInput(label: "Description", controller: descCtrl),
               const SizedBox(height: 15),
-              UniqloInput(label: "Sizes (split by comma: 40, 41)", controller: sizeCtrl),
+              UniqloInput(
+                label: "Sizes (split by comma: 40, 41)",
+                controller: sizeCtrl,
+              ),
               const SizedBox(height: 15),
-              UniqloInput(label: "Colors (split by comma: Black, White)", controller: colorCtrl),
+              UniqloInput(
+                label: "Colors (split by comma: Black, White)",
+                controller: colorCtrl,
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL", style: TextStyle(color: Colors.grey))),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("CANCEL", style: TextStyle(color: Colors.grey)),
+          ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.black, foregroundColor: Colors.white, shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black,
+              foregroundColor: Colors.white,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
             onPressed: () async {
-              // Convert chuỗi về List cho đúng Format Backend
-              final List<double> sizes = sizeCtrl.text.split(',').map((s) => double.parse(s.trim())).toList();
-              final List<String> colors = colorCtrl.text.split(',').map((c) => c.trim()).toList();
+              final List<double> sizes = sizeCtrl.text
+                  .split(',')
+                  .map((s) => double.parse(s.trim()))
+                  .toList();
+              final List<String> colors = colorCtrl.text
+                  .split(',')
+                  .map((c) => c.trim())
+                  .toList();
 
               final data = {
                 "name": nameCtrl.text,
@@ -155,13 +229,22 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
                 "color": colors,
               };
 
-              bool success = isEdit ? await _adminService.updateProduct(product['_id'], data) : await _adminService.createProduct(data);
-              
-              if (!context.mounted) return;
+              bool success = isEdit
+                  ? await _adminService.updateProduct(product['_id'], data)
+                  : await _adminService.createProduct(data);
+
+              if (!ctx.mounted) return;
+
               if (success) {
                 Navigator.pop(ctx);
+                if (!mounted) return;
+
                 _refreshProducts();
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isEdit ? "PRODUCT UPDATED" : "PRODUCT ADDED")));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(isEdit ? "PRODUCT UPDATED" : "PRODUCT ADDED"),
+                  ),
+                );
               }
             },
             child: Text(isEdit ? "UPDATE" : "CREATE"),
@@ -175,14 +258,22 @@ class _AdminProductsScreenState extends State<AdminProductsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("DELETE PRODUCT", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "DELETE PRODUCT",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: const Text("This kicks will be gone forever. Confirm?"),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("CANCEL")),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("CANCEL"),
+          ),
           TextButton(
             onPressed: () async {
               final success = await _adminService.deleteProduct(id);
-              if (!context.mounted) return;
+
+              if (!context.mounted || !ctx.mounted) return;
+
               if (success) {
                 Navigator.pop(ctx);
                 _refreshProducts();

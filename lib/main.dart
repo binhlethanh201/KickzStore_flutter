@@ -6,6 +6,7 @@ import 'providers/wishlist_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/review_provider.dart';
+import 'ui/screens/cart/payment_success_screen.dart';
 import 'ui/screens/main_wrapper.dart';
 
 void main() async {
@@ -44,6 +45,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MainWrapper(),
+
+      routes: {
+    '/payment-success': (context) => const PaymentSuccessScreen(),
+  },
     );
   }
 }

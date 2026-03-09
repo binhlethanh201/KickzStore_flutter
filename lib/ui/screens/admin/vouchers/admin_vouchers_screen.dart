@@ -138,11 +138,10 @@ class _AdminVouchersScreenState extends State<AdminVouchersScreen> {
               children: [
                 UniqloInput(label: "Code", controller: codeCtrl),
                 const SizedBox(height: 15),
-                // Ô NHẬP DESCRIPTION MỚI CHO BẢNH
                 UniqloInput(label: "Description", controller: descCtrl),
                 const SizedBox(height: 15),
                 DropdownButtonFormField<String>(
-                  value: type,
+                  initialValue: type, 
                   decoration: const InputDecoration(
                     labelText: "Discount Type",
                     labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -20,6 +22,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   String _paymentMethod = "vnpay";
   final TextEditingController _voucherController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  late AppLinks _appLinks;
+  StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
@@ -32,12 +36,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             "${addressObj['street']}, ${addressObj['district']}, ${addressObj['city']}";
       }
     });
+    _initDeepLinkListener();
+  }
+
+
+void _initDeepLinkListener() {
+    _appLinks = AppLinks();
+    _linkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      if (uri.scheme == 'kickzstore') {
+        if (uri.host == 'payment-success') {
+          // Thanh toán thành công -> Hiện thông báo và quay về trang chủ
+          if (mounted) {
+            _showSuccessDialog();
+          }
+        } else if (uri.host == 'payment-failed') {
+          // Thanh toán thất bại
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text("Payment failed or cancelled!"),
+                backgroundColor: Colors.red[900],
+              ),
+            );
+          }
+        }
+      }
+    });
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.zero,
+        ),
+        title: const Text("SUCCESS", style: TextStyle(fontWeight: FontWeight.bold)),
+        content: const Text("Your order has been paid and placed successfully!"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+            child: const Text(
+              "BACK TO HOME",
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
     _voucherController.dispose();
     _addressController.dispose();
+    _linkSubscription?.cancel();
     super.dispose();
   }
 

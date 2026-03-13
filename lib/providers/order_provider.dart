@@ -26,9 +26,9 @@ class OrderProvider with ChangeNotifier {
         "shippingMethod": shippingMethod,
         "address": address,
         "paymentMethod": paymentMethod,
-        if (voucherCode != null) "voucherCode": voucherCode,
-        if (cardId != null) "cardId": cardId,
-        if (cvv != null) "cvv": cvv,
+        "voucherCode": ?voucherCode,
+        "cardId": ?cardId,
+        "cvv": ?cvv,
       };
 
       final response = await _orderService.createOrder(body);
